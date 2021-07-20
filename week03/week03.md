@@ -100,13 +100,13 @@ we can play interval a bit
 
 so let's start a repl
 
-![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/472c2268-c534-4614-a571-68ac6af646ff/Untitled.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/472c2268-c534-4614-a571-68ac6af646ff/Untitled.png)
+![Untitled](https://user-images.githubusercontent.com/60770121/126346234-8ae18be5-e6c3-4449-ac73-77b26880d122.png)
 
 let's import Plutus.V1.Ledger.Interval 
 
 and for example, we can use this interval smart constructor, and as a lets just use integer for simplicity, to for example the, interval between 10 and 20, you can see that it says lowerbound is finite 10, 10 is included and upper bound is finite 20, 20 is included, so for example we can now check with `member`  with a 9 is member of this interval? but 10 should be so should be 12 and 20, but 21 shouldn't. 
 
-![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/8444b043-2975-4ee9-8036-49d8cfbb0c6c/Untitled.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/8444b043-2975-4ee9-8036-49d8cfbb0c6c/Untitled.png)
+![Untitled (1)](https://user-images.githubusercontent.com/60770121/126346485-aa3faf91-668a-4700-9689-b1ffff3a6771.png)
 
 let's use the `from` so we have `from (30 :: Integer)` 21 is not included in this, 30 should be, everything larger than 30 should also be, let's try `to` so `member 30 $ to (30 :: Integer)` 32 shouldn't be and lower than 30 as well (should be)
 
@@ -114,7 +114,7 @@ let's try one more, `intersection` this one, we can get intersection from 10 to 
 
 because for exa, 40 is contained interval a and b 
 
-![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/4a69de31-e7fb-44da-a3bb-549ba61755ef/Untitled.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/4a69de31-e7fb-44da-a3bb-549ba61755ef/Untitled.png)
+![Untitled (1)](https://user-images.githubusercontent.com/60770121/126346485-aa3faf91-668a-4700-9689-b1ffff3a6771.png)
 
 - What does $ mean in Haskell?
 
@@ -128,7 +128,7 @@ f $ x = f x
 
 [http://snakelemma.blogspot.com/2009/12/dollar-operator-in-haskell.html](http://snakelemma.blogspot.com/2009/12/dollar-operator-in-haskell.html)
 
-![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/e7fcb0d1-9f17-44e5-9c89-bb285c82bed6/Untitled.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/e7fcb0d1-9f17-44e5-9c89-bb285c82bed6/Untitled.png)
+![Untitled (3)](https://user-images.githubusercontent.com/60770121/126346844-5ea97b33-fd70-479d-9df2-82d88d7f2458.png)
 
 so now let's look at an example using this time range
 
@@ -164,12 +164,10 @@ mkValidator dat () ctx = traceIfFalse "beneficiary's signature missing" signedBy
 
 so we just use () unit in redeemer, so first arg now we needed, "dat" for data and redeemer as unit, and ignore the context , just put it with name, now we need to check two conditions: that the tranx signed by the beneficiary and that it submitted current time is after the deadline, so let's delegate the hyperfunction just write structure , "beneficiary's signature missing" would be error message, let's call this condition, sth by signedByBeneficiary and the second condition, deadline be reached, of course this two signedByBeneficiary and deadlineReached should be defined, and both we will need TxInfo, and that here in the repl,
 
-![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/90a6ca1f-798d-4374-947c-2ae8b824200b/Untitled.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/90a6ca1f-798d-4374-947c-2ae8b824200b/Untitled.png)
-
+![Untitled (4)](https://user-images.githubusercontent.com/60770121/126346952-10a96274-3614-4e2d-8daa-adfd293e58ae.png)
  imported Ledger and asked for the information of script context again, in order to get the txinfo from the script context we must use this field name txinfo `scripContextTxInfo` of our ctx (context) now we can define two conditions, let's first do signedByBeneficiary signed to Bool, how do we check that? While we see repl again,  there's a function called txsignedby `:t txSignedBy` it takes txinfo which we now have and PubKeyHash and wether  that tranx that txinfo refers to has been signed by this pulibc key hash, 
 
-![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/92b58a97-5cdb-401d-a336-ff83616af66e/Untitled.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/92b58a97-5cdb-401d-a336-ff83616af66e/Untitled.png)
-
+![Untitled (5)](https://user-images.githubusercontent.com/60770121/126347023-49056b25-0bb9-4c5f-ba0e-d822a8e38b2e.png)
 ```haskell
 where
     info :: TxInfo
