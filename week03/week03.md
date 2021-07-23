@@ -1,7 +1,12 @@
 # Week03
 
-obj
+### Learning Objective 
+- Validator that actually looks at context
+- Write Time sensitive logic
+- Parametrised contract
 
+<br />
+<br />
 
 In the first lecture, let's recall about EUTxO, in order to unlock the script address, the script attached to the address is run, and that script gets 3 pieces of input: the datum, the redeemer, and the context.
 
