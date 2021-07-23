@@ -1,26 +1,23 @@
-in first lecture, recall lars explain about EUTxO, 
+# Week03
 
-in order to unlock the script address, the script attached to the address is run, and that script gets 3 pieces of input: the datum, the redeemer, and the context.
+obj
 
-스크립트 어드레스를 언록한다는게 
 
-And in the second lecture, we saw examples of ..  how it actually works on Haskell. This low-level implementation where all three args are represented by *data type*, but Lars mention that in practice, that is not used that like we used, *instead of the type* version, we have *****datum and redeemer can be custom type*,  as long as they implemented is data type class and where the third argument, **the context, is of type `ScriptContext`**, and the examples we've looked so far only look at the datum and the redeemer, but always ignored the context, and the context is very important, so in this lectuere we start looking at the context, the `ScriptContext` type is defined in package plutus - ledger - api, which is a package we until now haven't need, now we need, so it is now included to week03 cabal file → should I  *cabal build* again? the context in this module [plutus.v1.ledger.contexts]([https://github.com/input-output-hk/plutus/blob/master/plutus-ledger-api/src/Plutus/V1/Ledger/Contexts.hs](https://github.com/input-output-hk/plutus/blob/master/plutus-ledger-api/src/Plutus/V1/Ledger/Contexts.hs)), the type ScriptContext, we see it is a record(?) type with two fields, one of type `Txinfo` which is a more suggesting? one, the second field of type `ScriptPurpse` and this type is defined in the same module here, it describe for which purpose does this script is run so the most important purpose for us will be  . `Spending` purpose and this is what we have talked about until now in the context of the Eutxo model, this is when script is run in order to validate spending input for transaction but there are 3 other purposes. The second most important one is the `Minting` one, so that comes into play when you want to define native token, and then this purpose of the script will be to describe under which circumstances, the native token can be minted or burned, there are 2 more purposes: `Rewarding` and `Certifying` . Rewarding seems to be related to **staking**, and certifying to certificate, such as delegation certificate. But a first we will concentrate on spending purpose. Now the actual context is in this field of type TxInfo which is defined also in the same module here, this basically described, it's an abbrebiation for transaction info, so it describes the spending transaction. In the eutxo model that Cardano uses, the context of validation is the spending transaction so the transaction is inputs and outputs. and that so it is expressed in this txinfo type so there are couple of fields that's are basically global transaction and than in particular we have the list of all the inputs of the transaction `TxInInfo` and outputs of the transaction `TxOut` This TxInInfo type and TxOut type again have lots of fields to allow you to drill into each individual input  respectively output.
+In the first lecture, let's recall about EUTxO, in order to unlock the script address, the script attached to the address is run, and that script gets 3 pieces of input: the datum, the redeemer, and the context.
 
-TxInfo fields → inputs the inputs takes in and  outputs the outputs, `txInfoFee` is the transaction fee takes into fodge is the amount of newly fodge native token, or if its negative amout newly burned, we'll come to that later lecture 
+스크립트 어드레스를 언록한다는게 런한다는건가
 
-then we have a list to certificates, `txInfoDCert` sth like delegation certificate
+And in the second lecture, we saw many examples of ~ how it actually works on Haskell. This low-level implementation where all three args are represented by **data type**, but Lars mention that, in practice, that is not used like we did, *instead of the type version*, **datum and redeemer can be custom type**,  and the third argument, **the context, is of type `ScriptContext`**, and the examples we've looked so far only look at the datum and the redeemer, but always ignored the context, and since the context is very important, in this third lecture, we start looking at the context, the `ScriptContext` type is defined in package plutus-ledger-api, which is a package we until now haven't need, now we need, so it is now included to week03 cabal file → *cabal build* 다시 해야하나? 
 
-staking withdrawals so withdrawals from rewards `txInfoWdrl` 
+The context in this module [plutus.v1.ledger.contexts]([https://github.com/input-output-hk/plutus/blob/master/plutus-ledger-api/src/Plutus/V1/Ledger/Contexts.hs](https://github.com/input-output-hk/plutus/blob/master/plutus-ledger-api/src/Plutus/V1/Ledger/Contexts.hs)), the type ScriptContext, we see it is a record(?) type with two fields, one of type `Txinfo`, which is a more suggesting? one, the second field of type `ScriptPurpose` and this type is defined in the same module here, it describes for which purpose does this script is run, so the most important purpose for us will be  . **`Spending`** purpose and this is what we have talked about until now. 
 
-`txInfoValidRange` denotes time range that transaction will be valid and we'll talk details in a minute
+In the context of the EUTxO model, this is *when script is run* in order to *validate spending input for transaction* but there are 3 other purposes. The second most important one is the **`Minting`** one, so that comes into play when you want to **define native token**, and then this purpose of the script will be to describe under which circumstances, the native token can be minted or burned, there are 2 more purposes: **`Rewarding`** and **`Certifying`** . **Rewarding** seems to be related to **staking**, and **certifying** to certificate, such as **delegation certificate**. 
 
-`txInfoSignatories` that s the list of public keys that have signed this transaction 
+First, let's concentrate on spending purpose. Now the actual context is in this field of type `TxInfo`, which is defined also in the same module here, this basically described, it's an abbrebiation for *transaction info*, so it describes the spending transaction. In the EUTxO model that Cardano uses, **the context of validation** is the **spending transaction** so the **transaction is inputs and outputs** and that so it is expressed in this `txinfo` type so there are couple of fields that's are basically global transaction and then, in particular, we have the list of all the inputs of the transaction `TxInInfo` and outputs of the transaction `TxOut` This `TxInInfo` type and `TxOut` type again have lots of fields to allow you to drill into each individual input respectively output.
 
-`txInfoData` he mentioned before that the spending transactions that transactions that spent the script output need to include the datum of that script output where producing transactions that sent money to script address have an output of the script address when we need to include the hash so this field takes info data is basically a dictionary from datum hash to data to include the full datum values belonging to given hash, also mentioned before, spending transaction always have to include datum of the input that spent, but the producing transaction optionally can also do that. 
+`TxInfo` fields → the inputs take in and outputs the outputs, `txInfoFee` is the transaction fee which takes into fodge? is the amount of newly fodge native token, or if its negative amount newly burned, we'll come to that later lecture. Then we have a list to certificate, `txInfoDCert` sth like delegation certificate, staking withdrawals so withdrawals from rewards `txInfoWdrl`. `txInfoValidRange` denotes **time range that transaction will be valid** and we'll talk details in a minute.`txInfoSignatories` that's the list of **public keys** that have signed to this transaction. `txInfoData` is that the spending transactions that transactions spent the script outputs need to include the datum of that script outputs where producing transactions that sent money to script address have an output of the script address when we need to include the hash so this field takes **info data** is basically a dictionary **from datum hash** to data to include the full datum values belonging to given hash, also mentioned before, **spending transaction** always have to include **datum of the input that spent**, but the *producing transaction optionally can also do that*. `txInfoId` is the id of this transaction
 
-`txInfoId` is the id of this transaction
-
-This brings us to an interesting dilemma, Lars have stressed every time one of the big advantages that Cardano EUtxo model has over sth like ETH is the fact that validation can happen in the wallet, transaction can still fail, because a tranx can consume an input when tranx arrived on the blockchain at the node for validation has already been consumed by somebody else but in that case the \tranx simply fails without having to pay fee what can never happen on the normal circum is validation script runs and then fails becuz you can always run script under exactly the same condition so it would fail before u ever submitted. and that is very important feature. it is not clear how to manage time in that context, becuz time is important becuz we want to beable to express validation logic that says that certain tranx valid after only certain time has been reached.
+This brings us to an interesting dilemma, I have stressed every time one of the big advantages that Cardano EUTxO model has over sth like ETH is the fact that **validation can happen in the wallet**, transaction can still fail, because a transaction can consume an input when transaction arrived on the blockchain at the node for validation has already been consumed by somebody else but in that case, the transaction simply fails without having to pay fee what can never happen on the normal circumstances is validation script runs and then fails because you can always run script under exactly the same condition, so it would fail before you ever submitted, and that is very important feature. It is not clear how to manage time in that context, because time is important because we want to be able to express validation logic that says that certain transaction is valid after only certain time has been reached.
 
 In Auction example, 
 
@@ -177,11 +174,100 @@ where
     signedByBeneficiary = txSignedBy info $ beneficiary dat
 
     deadlineReached :: Bool
-    deadlineReached = contains (from $ deadline dat) $ txInfoValidRange info
+    deadlineReached = contains (from $ deadline dat) $ txInfoValidRange info // we can get deadline from dat, txInfoValidRandge of info
 ```
 
 txSignedBy info we just defined, now we need the pub key hash of the beneficiary, and that we have we have the datum "dat" and this is of type vestingdatum and we have the beneficiary, that's our first condition, 
 
 now we also have deadline condition, tranx validity interval before the validator script is run, other checks are made, including the time check, so teh node check , whether current time falls into the valid range of the tranx. now we're in the validator current time lies somewhere in the validity interval, so the above one can be fine or not fine if the current time can be before / after the deadline, so it's not good for us, we must declare the tranx to be valid if this is validity interval, below one is just fine. we must check these interval that all interval is right to the deadline, we can use `contains` function here. if contains (from $ deadline dat → we can get from datum) and now we need the validity interval of the tranx, when we look at the txinfo again, there's txinfovalid range(above)  of the info
 
-let's look at the dummy type
+let's look at this dummy type that wraps up datum and redeemer type
+Typed is not a good name. Let's call it Vesting, Datum type is now on Vesting Data type, and Redeemer type is just a unit
+
+
+```haskell
+data Vesting
+instance Scripts.ValidatorTypes Vesting where
+    type instance DatumType Vesting = VestingDatum
+    type instance RedeemerType Vesting = ()
+
+typedValidator :: Scripts.TypedValidator Vesting
+typedValidator = Scripts.mkTypedValidator @Vesting
+    $$(PlutusTx.compile [|| mkValidator ||])
+    $$(PlutusTx.compile [|| wrap ||])
+where 
+  wrap = Scrips.warpValidator @VestingDatum @()
+
+validator :: Validator
+validator = Scrips.validatorScript typedValidator
+
+valHash :: Ledger.ValidatorHash
+valHash :: Scripts.validatorHash typedValidator
+
+scrAddress :: Ledger.Address
+scrAddress = scriptAddress validator
+```
+
+Now, we also have to change off-chain part, but as before, because the focus of this lecture is on-chain validation. 
+We just briefly go through it. At the top of the module, added some additional GHC extensions, etc 
+
+
+(32m) - off-chain part
+`VestingSchema` difines the endpoints that we want to expose to users. So "give" is for the person that wants to set up this vesting contract, 
+and then "grab" for the beneficiary to collect. So what parameters do we need?
+
+For "give", what this endpoint will do is, it will create a UTxO at the vesting address with the specified amount and the correct datum. 
+And if you recall our vesting datum contains the beneficiary and the deadline. So this "give" endpoint must know those,
+
+```haskell
+
+data GiveParams = GiveParams
+    { gpBeneficiary :: !PubKeyHash
+    , gpDeadline    :: !POSIXTime
+    , gpAmount      :: !Integer
+    } deriving (Generic, ToJSON, FromJSON, ToSchema)
+
+```
+
+The "grab" endpoint on the other hand, doesn't need any parameters because the beneficiary will just look for UTxOs sitting at the vesting address and then 
+can check whether he is beneficary, and whether the deadline passed, and then pick those UTxOs and then consume them.
+
+(35m) - grab off-chain
+the producing transaction, so in this case, the one that has been produced by the **"give"** endpoint, doesn't necessarily contain the datum, 
+it can **only contain the datum Hash?**, but if that was the case, then we would have a problem here in "grab", We wouldn't be able to find the datum, that corresponds to the UTxO that we find. 
+
+
+(50m) 
+the wallet code in a way that only submits a transaction, if it can actually grab the UTxO. If you want to actually test the validator, you would 
+have to modify the wallet code. -> Option homework! So remove these checks in the wallet and just try to grab everything, and then it should fail if you are not the beneficiary or if the deadline has not yet been reached, and then it should fail you in validation, not already just in the wallet, not even submitting the transaction. 
+
+We made use of context for the first time, and where we made use of this valid time interval in the trasnsaction to implement deadline. 
+
+### Parametrized
+
+So the idea of parametrized scripts is that you can have a parameter. So depending on the value of the parameter you get different values of typed validator.
+So instead of just defining one script, define a family of scripts that are parametrized by a given parameter.
+
+Since all the information we needed until now in the datum is now contained in this param `VestingParam`
+We can simply use () type as datum
+
+
+(55m) - mkValidator p -> it's not at compile time so...
+if we make the type of P in instance of a type class called lift, that does work at runtime. So using life code, we can compile P at runtime to plutus core...
+
+briefly look at `lift` class
+
+`lifeCode` is exactly what we need. 
+
+instead of using `mkValidator p` -> apply plutustx.lifecode ~ 
+
+
+
+### Homework
+
+HW1
+you make a gift to beneficiary one, but beneficiary one only has time till the deadline to retrieve it, otherwise you can "get it back" if you self are beneficiary too. 
+So your task is just simply write the correct logic. I need two diff tranx bc the validation interval would be diff. 
+
+HW2
+revisit the vesting, the original vesting, and remember we had two versions, the unparametrized version where the datum carried both beneficiary and deadline, and then a parametrized version, both turned to unit and ~ , so for this hw, you to do another parametrized version where we split beneficiary and deadline between parameter of the contract and datum. So the signature of the validator, make validator function will be like .. Split like `PubKeyHash -> POSIXTime -> () -> ctx -> Bool`: grab doesn't need any param, 
